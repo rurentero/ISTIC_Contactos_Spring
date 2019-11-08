@@ -1,0 +1,149 @@
+openapi: 3.0.0
+info:
+  title: GeoCardioBand Contactos
+  description: |
+    Esta es la API gestora de Contactos para el proyecto GeoCardioBand.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: rurentero@alumnos.unex.es
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/rurentero/GeoCardioBand_Contactos/1.0.0
+- url: https://www.geocardioband.com/api/v1/alertas
+- url: https://www.geocardioband.com/api/v1/alertas
+- url: https://virtserver.swaggerhub.com/javirojo/GeoCardioBand_Alertas/1.0.0
+tags:
+- name: contactos
+  description: Todo sobre el listado contactos
+paths:
+  /contactos:
+    get:
+      tags:
+      - contactos
+      summary: Devuelve la lista de contactos
+      description: Devuelve la lista de contactos
+      operationId: getContacts
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contacto'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contacto'
+        400:
+          description: Invalid status value
+        500:
+          description: Internal server error
+    post:
+      tags:
+      - contactos
+      summary: Añade un nuevo contacto conocido al listado
+      description: Añade un nuevo contacto conocido al listado
+      operationId: addContact
+      requestBody:
+        $ref: '#/components/requestBodies/Contacto'
+      responses:
+        405:
+          description: Invalid input
+        500:
+          description: Internal server error
+  /contactos/{contactId}:
+    delete:
+      tags:
+      - contactos
+      summary: Borra un contacto conocido
+      description: Borra un contacto conocido
+      operationId: deleteContact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: ID no valido
+        404:
+          description: Contacto no encontrado
+        500:
+          description: Internal server error
+  /contactos/buscarCercano:
+    get:
+      tags:
+      - contactos
+      summary: Busca el contacto más cercano
+      description: Busca el contacto más cercano
+      operationId: findClosest
+      responses:
+        200:
+          description: Contacto cercano encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacto'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contacto'
+        404:
+          description: Contacto cercano no encontrado
+        500:
+          description: Internal server error
+components:
+  schemas:
+    Ubicacion:
+      type: object
+      properties:
+        latitud:
+          type: number
+          format: float64
+        longitud:
+          type: number
+          format: float64
+      xml:
+        name: Ubicacion
+    Contacto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        numero:
+          type: string
+        ubicacion:
+          $ref: '#/components/schemas/Ubicacion'
+      xml:
+        name: Contacto
+  requestBodies:
+    Contacto:
+      description: Contacto que se va a añadir a la lista
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Contacto'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Contacto'
+      required: true
+    Ubicacion:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Ubicacion'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Ubicacion'
