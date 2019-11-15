@@ -1,3 +1,8 @@
 language: java
 jdk: oraclejdk8
 dist: trusty
+deploy:
+  provider: heroku
+  api_key:
+    secure: G8HEIMoCDVhf7g0HtEY9tyxkdhBAvaLzQL4l1h/XxemwtvaflmMwVgyxJGvv3Tj7EbHh8+yqb6VSOYT+8rYgKaBuXsqKSdEyXuePo1xzS9M2yh4RCxL46RWCyCAo1snE0x4rOfhzqEVR9m+VMR1kaEIxupYpOrs6Eh6jCLs8qA8ROxmC5XxxV+svumZiF5FmP6X5vimK7IZCzQINtBoirjJPT0NHnn4AuvNO2fVyNRgb/D8uaMqEx4cXrIJPU62z8kJRgWM4PnYXrcTUGdHiHrZAc4q4iBKmnaZvY0np605NVxs5c1sAqrVYM/8ise+PcGZliBgEPD2Qxw+G8/eTYkPMOIfcpeuOdADIPyuiamzfbOXsd6DakkOeCu9n3sHkDj3y4DS/oNqhPw0GPVFISxV4uk+I4R1s3NzD0dXAi+b/VqN4IQpTbDpK/Fq3xiaDLZAH/f5sIu2wBF0vN995JlSgCzCg+iUVBARfTxerj57JlftmPK0+hxAe7NT/2gixOKPS5XWF+7P
+  app: isticcontactos
