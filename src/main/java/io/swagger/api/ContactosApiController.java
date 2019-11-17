@@ -3,6 +3,7 @@ package io.swagger.api;
 import io.swagger.model.Contacto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
+import io.swagger.model.Ubicacion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import javax.validation.constraints.*;
 import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-11-08T18:01:04.874Z[GMT]")
@@ -48,11 +50,15 @@ public class ContactosApiController implements ContactosApi {
     }
 
     public ResponseEntity<Contacto> findClosest() {
+        // Mock implementation
         Contacto contacto = new Contacto();
         contacto.setId(Long.valueOf(1));
         contacto.setName("Francisco");
         contacto.setNumero("927112233");
-        //TODO ubicacion
+        Ubicacion ubicacion = new Ubicacion();
+        ubicacion.setLatitud(BigDecimal.valueOf(39.479483));
+        ubicacion.setLongitud(BigDecimal.valueOf(-6.342079));
+        contacto.setUbicacion(ubicacion);
         log.info("Retornando contacto cercano");
         return new ResponseEntity<Contacto>(contacto, HttpStatus.OK);
     }
