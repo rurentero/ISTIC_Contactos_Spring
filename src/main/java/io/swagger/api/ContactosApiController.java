@@ -21,6 +21,8 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-11-08T18:01:04.874Z[GMT]")
@@ -33,6 +35,9 @@ public class ContactosApiController implements ContactosApi {
 
     private final HttpServletRequest request;
 
+    //Mocked contact list
+    private List<Contacto> agenda = new LinkedList<Contacto>();
+
     @org.springframework.beans.factory.annotation.Autowired
     public ContactosApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
@@ -40,13 +45,26 @@ public class ContactosApiController implements ContactosApi {
     }
 
     public ResponseEntity<Void> addContact(@ApiParam(value = "Contacto que se va a añadir a la lista" ,required=true )  @Valid @RequestBody Contacto body) {
-        String accept = request.getHeader("Accept");
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        if (agenda.contains(body)) {
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }else {
+            agenda.add(body);
+            return new ResponseEntity<Void>(HttpStatus.CREATED);
+        }
     }
 
     public ResponseEntity<Void> deleteContact(@ApiParam(value = "",required=true) @PathVariable("contactId") Long contactId) {
-        String accept = request.getHeader("Accept");
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        boolean deleted = false;
+        for (Contacto c : agenda) {
+            if(c.getId().equals(contactId)) {
+                agenda.remove(c);
+                deleted=true;
+            }
+        }
+        if (deleted)
+            return new ResponseEntity<Void>(HttpStatus.OK);
+        else
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<Contacto> findClosest() {
@@ -64,17 +82,7 @@ public class ContactosApiController implements ContactosApi {
     }
 
     public ResponseEntity<List<Contacto>> getContacts() {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<List<Contacto>>(objectMapper.readValue("[ {\n  \"ubicacion\" : {\n    \"latitud\" : 6.027456183070403,\n    \"longitud\" : 1.4658129805029452\n  },\n  \"numero\" : \"numero\",\n  \"name\" : \"name\",\n  \"id\" : 0\n}, {\n  \"ubicacion\" : {\n    \"latitud\" : 6.027456183070403,\n    \"longitud\" : 1.4658129805029452\n  },\n  \"numero\" : \"numero\",\n  \"name\" : \"name\",\n  \"id\" : 0\n} ]", List.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<List<Contacto>>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<List<Contacto>>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<List<Contacto>>(agenda, HttpStatus.OK);
     }
 
 }
