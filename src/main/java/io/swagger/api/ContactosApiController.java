@@ -48,17 +48,13 @@ public class ContactosApiController implements ContactosApi {
     }
 
     public ResponseEntity<Contacto> findClosest() {
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("application/json")) {
-            try {
-                return new ResponseEntity<Contacto>(objectMapper.readValue("{\n  \"ubicacion\" : {\n    \"latitud\" : 6.027456183070403,\n    \"longitud\" : 1.4658129805029452\n  },\n  \"numero\" : \"numero\",\n  \"name\" : \"name\",\n  \"id\" : 0\n}", Contacto.class), HttpStatus.NOT_IMPLEMENTED);
-            } catch (IOException e) {
-                log.error("Couldn't serialize response for content type application/json", e);
-                return new ResponseEntity<Contacto>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-
-        return new ResponseEntity<Contacto>(HttpStatus.NOT_IMPLEMENTED);
+        Contacto contacto = new Contacto();
+        contacto.setId(Long.valueOf(1));
+        contacto.setName("Francisco");
+        contacto.setNumero("927112233");
+        //TODO ubicacion
+        log.info("Retornando contacto cercano");
+        return new ResponseEntity<Contacto>(contacto, HttpStatus.OK);
     }
 
     public ResponseEntity<List<Contacto>> getContacts() {
