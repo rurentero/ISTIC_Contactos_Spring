@@ -1,4 +1,6 @@
 package io.swagger.api;
+import java.io.DataOutputStream;
+import java.net.Socket;
 
 import io.swagger.model.Contacto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,10 +23,8 @@ import javax.validation.Valid;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-11-08T18:01:04.874Z[GMT]")
 @Controller
 public class ContactosApiController implements ContactosApi {
@@ -68,8 +68,10 @@ public class ContactosApiController implements ContactosApi {
     }
 
     public ResponseEntity<Contacto> findClosest() {
+        final long t_start = System.currentTimeMillis();
+
         // Mock implementation
-        Contacto contacto = new Contacto();
+        final Contacto contacto = new Contacto();
         contacto.setId(Long.valueOf(1));
         contacto.setName("Francisco");
         contacto.setNumero("927112233");
@@ -78,6 +80,48 @@ public class ContactosApiController implements ContactosApi {
         ubicacion.setLongitud(BigDecimal.valueOf(-6.342079));
         contacto.setUbicacion(ubicacion);
         log.info("Retornando contacto cercano");
+        final long t_end = System.currentTimeMillis();
+
+        //Creación de un nuevo thread para que la métrica no interfiera en el tiempo de respuesta del endpoint.
+        new Thread() {
+            public void run() {
+                try { //Envío de métricas
+                    // Para testear distintos valores de las métricas, se provocarán status 500, 404 y 200 de forma aleatoria.
+                    switch (new Random().nextInt(10)) {
+                        // Registrar un 500 (2/10)
+                        case 0:
+                        case 1:
+                            Socket conn1 = new Socket("39711718.carbon.hostedgraphite.com", 2003);
+                            DataOutputStream dos1 = new DataOutputStream(conn1.getOutputStream());
+                            dos1.writeBytes("edff5a27-c65f-443e-8e69-88ff29994b57.contactos.buscarCercano.500 "+1+"\n");
+                            conn1.close();
+                            log.info("Metrica: 500");
+                            break;
+                        // Registrar un 404 (2/10)
+                        case 2:
+                        case 3:
+                            Socket conn2 = new Socket("39711718.carbon.hostedgraphite.com", 2003);
+                            DataOutputStream dos2 = new DataOutputStream(conn2.getOutputStream());
+                            dos2.writeBytes("edff5a27-c65f-443e-8e69-88ff29994b57.contactos.buscarCercano.404 "+1+"\n");
+                            conn2.close();
+                            log.info("Metrica: 404");
+                            break;
+                        // Registrar exito (métrica de tiempo de ejecucion) (6/10)
+                        default:
+                            long t_execution =  (t_end - t_start);
+                            log.info("Metrica: Tiempo de ejecucion " + t_execution);
+                            Socket conn = new Socket("39711718.carbon.hostedgraphite.com", 2003);
+                            DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
+                            dos.writeBytes("edff5a27-c65f-443e-8e69-88ff29994b57.contactos.buscarCercano.tiempoEjecucion "+t_execution+1+"\n"); //+1 ms
+                            conn.close();
+                            break;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
         return new ResponseEntity<Contacto>(contacto, HttpStatus.OK);
     }
 
